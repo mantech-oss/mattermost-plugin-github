@@ -798,16 +798,19 @@ func (p *Plugin) postPullRequestReviewEvent(event *github.PullRequestReviewEvent
 		return
 	}
 
-	newReviewMessage, err := renderTemplate("pullRequestReviewEvent", event)
+	message, err := renderTemplate("pullRequestReviewEvent", event)
 	if err != nil {
 		p.API.LogWarn("Failed to render template", "error", err.Error())
 		return
 	}
 
+	if event.GetAction() != actionCreated {
+		return
+	}
+
 	post := &model.Post{
-		UserId:  p.BotUserID,
-		Type:    "custom_git_pull_review",
-		Message: newReviewMessage,
+		UserId: p.BotUserID,
+		Type:   "custom_git_pr",
 	}
 
 	labels := make([]string, len(event.GetPullRequest().Labels))
@@ -835,6 +838,10 @@ func (p *Plugin) postPullRequestReviewEvent(event *github.PullRequestReviewEvent
 
 		if !contained && label != "" {
 			continue
+		}
+
+		if event.GetAction() == actionCreated {
+			post.Message = message
 		}
 
 		post.ChannelId = sub.ChannelID
@@ -852,16 +859,19 @@ func (p *Plugin) postPullRequestReviewCommentEvent(event *github.PullRequestRevi
 		return
 	}
 
-	newReviewMessage, err := renderTemplate("newReviewComment", event)
+	if event.GetAction() != actionCreated {
+		return
+	}
+
+	message, err := renderTemplate("newReviewComment", event)
 	if err != nil {
 		p.API.LogWarn("Failed to render template", "error", err.Error())
 		return
 	}
 
 	post := &model.Post{
-		UserId:  p.BotUserID,
-		Type:    "custom_git_pull_review_comment",
-		Message: newReviewMessage,
+		UserId: p.BotUserID,
+		Type:   "custom_git_pr",
 	}
 
 	labels := make([]string, len(event.GetPullRequest().Labels))
@@ -889,6 +899,10 @@ func (p *Plugin) postPullRequestReviewCommentEvent(event *github.PullRequestRevi
 
 		if !contained && label != "" {
 			continue
+		}
+
+		if event.GetAction() == actionCreated {
+			post.Message = message
 		}
 
 		post.ChannelId = sub.ChannelID

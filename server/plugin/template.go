@@ -280,7 +280,6 @@ Assignees: {{range $i, $el := .Assignees -}} {{- if $i}}, {{end}}{{template "use
 	template.Must(masterTemplate.New("newReviewComment").Funcs(funcMap).Parse(`
 {{template "repo" .GetRepo}} New review comment by {{template "user" .GetSender}} on {{template "pullRequest" .GetPullRequest}}:
 
-{{.GetComment.GetDiffHunk}}
 {{.GetComment.GetBody | trimBody | replaceAllGitHubUsernames}}
 `))
 
