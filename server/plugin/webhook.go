@@ -804,10 +804,6 @@ func (p *Plugin) postPullRequestReviewEvent(event *github.PullRequestReviewEvent
 		return
 	}
 
-	if event.GetAction() != actionCreated {
-		return
-	}
-
 	post := &model.Post{
 		UserId: p.BotUserID,
 		Type:   "custom_git_pr",
