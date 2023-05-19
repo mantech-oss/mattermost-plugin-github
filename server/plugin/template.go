@@ -179,7 +179,7 @@ Labels: {{range $i, $el := .Labels -}}` + "{{- if $i}}, {{end}}[`{{ $el.Name }}`
 
 	template.Must(masterTemplate.New("assignee").Funcs(funcMap).Parse(`
 {{- if .Assignees }}
-Assignees: {{range $i, $el := .Assignees -}} {{- if $i}}, {{end}}{{template "user" $el}}{{end -}}
+담당자 {{range $i, $el := .Assignees -}} {{- if $i}}, {{end}}{{template "user" $el}}{{end -}}
 {{- end -}}
 `))
 
@@ -268,11 +268,11 @@ Assignees: {{range $i, $el := .Assignees -}} {{- if $i}}, {{end}}{{template "use
 `))
 
 	template.Must(masterTemplate.New("pullRequestReviewEvent").Funcs(funcMap).Parse(`
-{{template "repo" .GetRepo}} {{template "user" .GetSender}}
-{{- if eq .GetReview.GetState "APPROVED"}} approved
-{{- else if eq .GetReview.GetState "COMMENTED"}} commented on
-{{- else if eq .GetReview.GetState "CHANGES_REQUESTED"}} requested changes on
-{{- end }} {{template "pullRequest" .GetPullRequest}}:
+{{- template "assignee" .GetPullRequest }}님, {{template "repo" .GetRepo}} {{template "user" .GetSender}}님이 {{template "pullRequest" .GetPullRequest}} PR
+{{- if eq .GetReview.GetState "approved"}} 승인하였습니다.
+{{- else if eq .GetReview.GetState "commented"}} 코멘트 작성하였습니다.
+{{- else if eq .GetReview.GetState "changes_requested"}} 변경 요청하였습니다.
+{{- end }}
 
 {{.Review.GetBody | replaceAllGitHubUsernames}}
 `))

@@ -790,9 +790,9 @@ func (p *Plugin) postPullRequestReviewEvent(event *github.PullRequestReviewEvent
 	}
 
 	switch event.GetReview().GetState() {
-	case "APPROVED":
-	case "COMMENTED":
-	case "CHANGES_REQUESTED":
+	case "approved":
+	case "commented":
+	case "changes_requested":
 	default:
 		p.API.LogDebug("Unhandled review state", "state", event.GetReview().GetState())
 		return
@@ -836,7 +836,7 @@ func (p *Plugin) postPullRequestReviewEvent(event *github.PullRequestReviewEvent
 			continue
 		}
 
-		if event.GetAction() == actionCreated {
+		if event.GetAction() == actionSubmitted {
 			post.Message = message
 		}
 
